@@ -1,0 +1,124 @@
+<svg width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient background -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#09100d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d1610;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Radial glow -->
+    <radialGradient id="glow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#5db87a;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#5db87a;stop-opacity:0" />
+    </radialGradient>
+
+    <!-- Grid pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2a1f" stroke-width="1" opacity="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1500" height="500" fill="url(#bgGradient)"/>
+
+  <!-- Grid overlay -->
+  <rect width="1500" height="500" fill="url(#grid)"/>
+
+  <!-- Glow effect left -->
+  <ellipse cx="300" cy="250" rx="400" ry="300" fill="url(#glow)"/>
+
+  <!-- Glow effect right -->
+  <ellipse cx="1200" cy="250" rx="300" ry="250" fill="url(#glow)"/>
+
+  <!-- Robot icon (left side) -->
+  <g transform="translate(150, 125)">
+    <!-- Robot head -->
+    <rect x="0" y="20" width="120" height="100" fill="#1c2a1f" rx="10" stroke="#5db87a" stroke-width="3"/>
+
+    <!-- Antenna -->
+    <line x1="60" y1="20" x2="60" y2="0" stroke="#5db87a" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="60" cy="-5" r="7" fill="#5db87a"/>
+
+    <!-- Eyes -->
+    <rect x="20" y="45" width="30" height="30" fill="#5db87a" rx="4"/>
+    <rect x="70" y="45" width="30" height="30" fill="#5db87a" rx="4"/>
+
+    <!-- Eye gleam -->
+    <rect x="25" y="50" width="10" height="10" fill="#dce8de" rx="2" opacity="0.6"/>
+    <rect x="75" y="50" width="10" height="10" fill="#dce8de" rx="2" opacity="0.6"/>
+
+    <!-- Mouth -->
+    <rect x="35" y="90" width="50" height="15" fill="#0d1610" rx="4" stroke="#5db87a" stroke-width="2"/>
+    <line x1="40" y1="92" x2="40" y2="103" stroke="#5db87a" stroke-width="1.5"/>
+    <line x1="50" y1="92" x2="50" y2="103" stroke="#5db87a" stroke-width="1.5"/>
+    <line x1="60" y1="92" x2="60" y2="103" stroke="#5db87a" stroke-width="1.5"/>
+    <line x1="70" y1="92" x2="70" y2="103" stroke="#5db87a" stroke-width="1.5"/>
+    <line x1="80" y1="92" x2="80" y2="103" stroke="#5db87a" stroke-width="1.5"/>
+
+    <!-- Ears -->
+    <circle cx="-10" cy="65" r="10" fill="#1c2a1f" stroke="#5db87a" stroke-width="2"/>
+    <circle cx="130" cy="65" r="10" fill="#1c2a1f" stroke="#5db87a" stroke-width="2"/>
+
+    <!-- Body -->
+    <rect x="30" y="120" width="60" height="30" fill="#1c2a1f" rx="5" stroke="#5db87a" stroke-width="2"/>
+
+    <!-- Bolts -->
+    <circle cx="10" cy="30" r="4" fill="#5db87a"/>
+    <circle cx="110" cy="30" r="4" fill="#5db87a"/>
+  </g>
+
+  <!-- Main heading -->
+  <text x="400" y="180" font-family="'Fraunces', Georgia, serif" font-size="72" font-weight="300" fill="#dce8de" letter-spacing="-2">
+    AI Email Agent
+  </text>
+
+  <!-- Subheading with price -->
+  <g>
+    <!-- $9/month highlight -->
+    <rect x="398" y="220" width="200" height="70" fill="#5db87a" rx="8" opacity="0.15"/>
+    <text x="410" y="270" font-family="'Space Grotesk', sans-serif" font-size="52" font-weight="600" fill="#5db87a">
+      $9<tspan font-size="36" fill="#7a9480">/month</tspan>
+    </text>
+
+    <!-- Separator -->
+    <text x="620" y="270" font-family="'Space Grotesk', sans-serif" font-size="52" font-weight="300" fill="#455c4a">
+      •
+    </text>
+
+    <!-- 500 Replies -->
+    <text x="670" y="270" font-family="'Space Grotesk', sans-serif" font-size="42" font-weight="500" fill="#dce8de">
+      500 Replies Included
+    </text>
+  </g>
+
+  <!-- Tagline -->
+  <text x="400" y="330" font-family="'Space Grotesk', sans-serif" font-size="28" font-weight="400" fill="#7a9480" letter-spacing="0.5">
+    Never reply to an email again
+  </text>
+
+  <!-- Decorative elements -->
+  <!-- Bottom left accent -->
+  <circle cx="100" cy="450" r="3" fill="#5db87a" opacity="0.5"/>
+  <circle cx="130" cy="460" r="2" fill="#5db87a" opacity="0.3"/>
+  <circle cx="160" cy="455" r="2.5" fill="#5db87a" opacity="0.4"/>
+
+  <!-- Top right accent -->
+  <circle cx="1400" cy="50" r="3" fill="#5db87a" opacity="0.5"/>
+  <circle cx="1370" cy="40" r="2" fill="#5db87a" opacity="0.3"/>
+  <circle cx="1340" cy="45" r="2.5" fill="#5db87a" opacity="0.4"/>
+
+  <!-- Right side decorative line -->
+  <line x1="1300" y1="200" x2="1400" y2="200" stroke="#5db87a" stroke-width="2" opacity="0.3" stroke-dasharray="5,5"/>
+  <line x1="1300" y1="300" x2="1400" y2="300" stroke="#5db87a" stroke-width="2" opacity="0.3" stroke-dasharray="5,5"/>
+
+  <!-- Bottom badge/stamp style -->
+  <g transform="translate(1250, 380)">
+    <circle cx="0" cy="0" r="60" fill="none" stroke="#5db87a" stroke-width="2" opacity="0.4"/>
+    <text x="0" y="-10" font-family="'Space Grotesk', sans-serif" font-size="16" font-weight="600" fill="#5db87a" text-anchor="middle">
+      BOOTSTRAP
+    </text>
+    <text x="0" y="10" font-family="'Space Grotesk', sans-serif" font-size="16" font-weight="600" fill="#5db87a" text-anchor="middle">
+      FRIENDLY
+    </text>
+  </g>
+</svg>
