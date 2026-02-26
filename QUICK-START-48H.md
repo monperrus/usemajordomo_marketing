@@ -8,40 +8,40 @@ Get first customers for Majordomo with $100/month budget.
 ### Hour 1: Content Publishing (HIGH PRIORITY)
 **Goal:** Get 3 blog posts live for SEO
 
-- [ ] **Set up blog** (if not already done)
+- [x] **Set up blog** (if not already done)
   - Option 1: WordPress on usemajordomo.com/blog (free with hosting)
   - Option 2: Medium.com/@majordomo (free, fast, SEO benefits)
   - Option 3: Substack (free, builds email list)
 
-- [ ] **Publish 3 blog posts** (already written in `/content/blog/`)
+- [x] **Publish 3 blog posts** (already written in `/content/blog/`)
   1. "How to Manage 100+ Emails Per Day" - `/content/blog/01-manage-100-emails-per-day.md`
   2. "AI Email Assistant Under $10" - `/content/blog/02-ai-email-assistant-under-10-dollars.md`
   3. "Email Bankruptcy Guide" - `/content/blog/03-email-bankruptcy-what-it-is-how-to-prevent.md`
 
-- [ ] **Add CTAs to each post**
+- [x] **Add CTAs to each post**
   - Bottom: "Try Majordomo free for 7 days: https://usemajordomo.com"
   - Inline: "[mention product naturally]"
 
 ### Hour 2: Social Media Setup
 **Goal:** Establish presence, start building audience
 
-- [ ] **Twitter/X Setup**
+- [x] **Twitter/X Setup**
   - Create account: @usemajordomo (or @majordomoai if taken)
   - Bio: "Never reply to an email again. Autonomous AI email agent. $9/month. Built by bootstrappers for bootstrappers. 🤖"
   - Profile pic: Logo
   - Banner: "AI Email Agent - $9/month - 500 Replies Included"
   - Pinned tweet: "Spending 3hrs/day on email? Majordomo is AI that handles responses for you. $9/month. Try free: [link]"
 
-- [ ] **LinkedIn Company Page**
+- [x] **LinkedIn Company Page**
   - Create: Majordomo
   - Add: Description, logo, website
   - First post: Introduce the product (use content from `/content/social/linkedin-week-1.md`)
 
-- [ ] **LinkedIn Personal (Founder Account)**
+- [x] **LinkedIn Personal (Founder Account)**
   - Update bio to mention Majordomo
   - Post first founder story (from LinkedIn week 1 content)
 
-- [ ] **Reddit Account**
+- [x] **Reddit Account**
   - Create account (don't use "majordomo" - be personal)
   - Subscribe to: r/entrepreneur, r/productivity, r/startups, r/SaaS, r/solopreneur
   - **Don't post yet** - just read and understand communities
@@ -54,7 +54,7 @@ Get first customers for Majordomo with $100/month budget.
   - Buy: getmajordomo.com or trymajordomo.com (~$12/year)
   - Purpose: Separate from main domain to protect reputation
 
-- [ ] **Sign up for Instantly.ai**
+- [x] **Sign up for Instantly.ai**
   - Go to instantly.ai
   - Sign up: $37/month plan (unlimited sending)
   - Connect your new domain
