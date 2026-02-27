@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["url", "signal", "punchline", "content_outline", "positioning", "actual_content", "estimated_impact"],
+    "properties": {
+      "url": {
+        "type": "string",
+        "format": "uri"
+      },
+      "signal": {
+        "type": "string",
+        "description": "Source signal that triggered the content idea"
+      },
+      "punchline": {
+        "type": "string",
+        "description": "Core insight or takeaway"
+      },
+      "content_outline": {
+        "type": "object",
+        "required": ["hook", "story", "insight", "value_prop", "discussion"],
+        "properties": {
+          "hook":       { "type": "string" },
+          "story":      { "type": "string" },
+          "insight":    { "type": "string" },
+          "value_prop": { "type": "string" },
+          "discussion": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "positioning": {
+        "type": "string"
+      },
+      "actual_content": {
+        "type": "string"
+      },
+      "estimated_impact": {
+        "type": "object",
+        "required": ["expected_upvotes", "expected_replies", "visibility", "lead_potential"],
+        "properties": {
+          "expected_upvotes": { "type": "string" },
+          "expected_replies": { "type": "string" },
+          "visibility":       { "type": "string" },
+          "lead_potential":   { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }
+}

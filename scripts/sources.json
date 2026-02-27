@@ -1,0 +1,22 @@
+{
+  "twitter": {
+    "queries": [
+      "email overload",
+      "too many emails",
+      "inbox zero impossible",
+      "drowning in email",
+      "email bankruptcy",
+      "productivity tips email"
+    ]
+  },
+  "reddit": {
+    "subreddits": ["productivity", "entrepreneur", "startups", "SaaS", "solopreneur"],
+    "keywords": ["email", "inbox"]
+  },
+  "hackernews": {
+    "keywords": ["email", "productivity", "automation", "AI"]
+  },
+  "googleTrends": {
+    "topics": ["email automation", "AI email", "productivity tools"]
+  }
+}

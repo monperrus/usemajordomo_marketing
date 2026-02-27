@@ -47,6 +47,9 @@ if (process.env.TWITTER_BEARER_TOKEN) {
 // Load signal sources from configuration file
 const SOURCES = require('./sources.json');
 
+// Load JSON schema for content ideas output
+const CONTENT_SCHEMA = require('./schema.json');
+
 /**
  * Monitor Twitter for trending discussions
  */
@@ -224,11 +227,11 @@ async function analyzeSignals(signals) {
   // Prepare signals summary
   const signalSummary = signals.map(s => {
     if (s.source === 'twitter') {
-      return `Twitter (${s.engagement} engagement): "${s.text}"`;
+      return `Twitter (${s.engagement} engagement): "${s.text}"\nURL: ${s.url}`;
     } else if (s.source === 'reddit') {
-      return `Reddit r/${s.subreddit} (${s.score} upvotes): "${s.title}"`;
+      return `Reddit r/${s.subreddit} (${s.score} upvotes, ${s.comments} comments): "${s.title}"\nURL: ${s.url}`;
     } else if (s.source === 'hackernews') {
-      return `HN (${s.score} points): "${s.title}"`;
+      return `HN (${s.score} points, ${s.comments} comments): "${s.title}"\nURL: ${s.url}`;
     }
     return JSON.stringify(s);
   }).join('\n\n');
@@ -244,13 +247,16 @@ ${signalSummary}
 Based on these real conversations and trends, generate a Reddit comment strategy for engaging in these conversations meaningfully. We DO NOT write AI slop. We are Helpful & experienced rather than sales-focused.
 
 For each conversation, include:
-- The specific signal it responds to
-- Punchline
-- Content outline
-- Actual content
-- Estimated reach/impact
+- The specific signal it responds to (with URL)
+- Punchline (core insight)
+- Content outline (hook, story, insight, value_prop, discussion)
+- Actual content (the full Reddit comment)
+- Estimated impact
 
-Format as JSON.`;
+IMPORTANT: Return ONLY valid JSON matching this exact schema:
+${JSON.stringify(CONTENT_SCHEMA, null, 2)}
+
+Do not include markdown code blocks or any text outside the JSON. Return raw JSON only.`;
 
   const completion = await openai.chat.completions.create({
     model: 'anthropic/claude-sonnet-4-6', // Via OpenRouter, cheaper
