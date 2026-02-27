@@ -10,8 +10,8 @@
     ]
   },
   "reddit": {
-    "subreddits": ["productivity", "entrepreneur", "startups", "SaaS", "solopreneur"],
-    "keywords": ["email", "inbox"]
+    "subreddits": ["productivity", "entrepreneur", "smallbusiness", "automation","emailmarketing", "solopreneur"],
+    "keywords": ["email", "inbox", "auto", "automatic"]
   },
   "hackernews": {
     "keywords": ["email", "productivity", "automation", "AI"]

@@ -125,9 +125,10 @@ async function monitorReddit() {
         const text = `${data.title} ${data.selftext}`.toLowerCase();
 
         // Check if related to our topics
+        // console.log(SOURCES.reddit.keywords)
         const isRelevant = SOURCES.reddit.keywords.some(kw => text.includes(kw));
-
         if (isRelevant && data.score > 100) {
+          console.log(data.permalink)
           signals.push({
             source: 'reddit',
             subreddit,
@@ -344,6 +345,46 @@ ${content}
 }
 
 /**
+ * Load processed signals history to avoid duplicates
+ */
+async function loadProcessedSignals() {
+  try {
+    const data = await fs.readFile('processed-signals.json', 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    return []; // File doesn't exist yet
+  }
+}
+
+/**
+ * Save processed signals
+ */
+async function saveProcessedSignals(signals) {
+  const processed = await loadProcessedSignals();
+  const newProcessed = signals.map(s => ({
+    url: s.url,
+    source: s.source,
+    processedAt: new Date().toISOString()
+  }));
+
+  // Merge with existing, keep last 1000 to avoid file growing forever
+  const merged = [...processed, ...newProcessed].slice(-1000);
+
+  await fs.writeFile(
+    'processed-signals.json',
+    JSON.stringify(merged, null, 2)
+  );
+}
+
+/**
+ * Filter out already processed signals
+ */
+function filterNewSignals(signals, processed) {
+  const processedUrls = new Set(processed.map(p => p.url));
+  return signals.filter(s => !processedUrls.has(s.url));
+}
+
+/**
  * Main intelligence loop
  */
 async function runIntelligenceLoop() {
@@ -361,10 +402,18 @@ async function runIntelligenceLoop() {
       ...hnSignals,
     ];
 
-    console.log(`\n📊 Total signals collected: ${allSignals.length}\n`);
+    console.log(`\n📊 Total signals collected: ${allSignals.length}`);
 
-    if (allSignals.length === 0) {
-      console.log('⚠️  No signals found. Will retry in 1 hour.');
+    // Filter out already processed signals
+    const processedSignals = await loadProcessedSignals();
+    console.log(processedSignals)
+    const newSignals = filterNewSignals(allSignals, processedSignals);
+
+    console.log(`📊 New signals (not processed before): ${newSignals.length}`);
+    console.log(`⏭️  Already processed: ${allSignals.length - newSignals.length}\n`);
+
+    if (newSignals.length === 0) {
+      console.log('⚠️  No new signals found. All signals already processed.');
       return;
     }
 
@@ -373,18 +422,21 @@ async function runIntelligenceLoop() {
     const signalsFile = `signals-${timestamp}.json`;
     const ideasFile = `content-ideas-${timestamp}.json`;
 
-    // Save signals for analysis (with timestamp and as latest)
+    // Save NEW signals for analysis (with timestamp and as latest)
     await fs.writeFile(
       signalsFile,
-      JSON.stringify(allSignals, null, 2)
+      JSON.stringify(newSignals, null, 2)
     );
     await fs.writeFile(
       'signals-latest.json',
-      JSON.stringify(allSignals, null, 2)
+      JSON.stringify(newSignals, null, 2)
     );
 
-    // Analyze and generate content ideas
-    const contentIdeas = await analyzeSignals(allSignals);
+    // Analyze and generate content ideas from NEW signals only
+    const contentIdeas = await analyzeSignals(newSignals);
+
+    // Mark these signals as processed
+    await saveProcessedSignals(newSignals);
 
     await fs.writeFile(
       ideasFile,
@@ -411,17 +463,123 @@ async function runIntelligenceLoop() {
   }
 }
 
-// Run if called directly
-if (require.main === module) {
-  runIntelligenceLoop()
-    .then(() => {
-      console.log('✅ Intelligence loop complete');
-      process.exit(0);
-    })
-    .catch(error => {
-      console.error('❌ Fatal error:', error);
-      process.exit(1);
-    });
+/**
+ * Process a single Reddit URL and generate content
+ */
+async function processRedditUrl(url) {
+  console.log(`🔍 Processing Reddit URL: ${url}\n`);
+
+  try {
+    // Extract post ID from URL
+    const match = url.match(/comments\/([a-z0-9]+)/i);
+    if (!match) {
+      throw new Error('Invalid Reddit URL. Expected format: https://reddit.com/r/subreddit/comments/POST_ID/...');
+    }
+
+    const postId = match[1];
+
+    // Fetch the post data
+    const response = await axios.get(
+      `https://www.reddit.com/comments/${postId}.json`,
+      { headers: { 'User-Agent': 'Majordomo-Content-Bot/1.0' } }
+    );
+
+    const postData = response.data[0].data.children[0].data;
+
+    // Create signal from post
+    const signal = {
+      source: 'reddit',
+      subreddit: postData.subreddit,
+      title: postData.title,
+      text: postData.selftext || '',
+      score: postData.score,
+      comments: postData.num_comments,
+      url: `https://reddit.com${postData.permalink}`,
+      timestamp: new Date()
+    };
+
+    console.log('📊 Signal extracted:');
+    console.log(`   Subreddit: r/${signal.subreddit}`);
+    console.log(`   Title: ${signal.title}`);
+    console.log(`   Score: ${signal.score} upvotes`);
+    console.log(`   Comments: ${signal.comments}\n`);
+
+    // Generate content ideas for this single signal
+    console.log('🧠 Generating content idea...\n');
+    const contentIdeas = await analyzeSignals([signal]);
+
+    // Parse the ideas
+    let ideas;
+    try {
+      ideas = JSON.parse(contentIdeas);
+    } catch {
+      // Try extracting from markdown code block
+      const jsonMatch = contentIdeas.match(/```json\n([\s\S]*?)\n```/) ||
+                       contentIdeas.match(/```\n([\s\S]*?)\n```/);
+      if (jsonMatch) {
+        ideas = JSON.parse(jsonMatch[1]);
+      } else {
+        throw new Error('Could not parse AI response as JSON');
+      }
+    }
+
+    if (!Array.isArray(ideas)) {
+      ideas = [ideas];
+    }
+
+    // Output results
+    console.log('=' .repeat(80));
+    console.log('GENERATED CONTENT');
+    console.log('='.repeat(80));
+    console.log('\n📄 Full JSON:\n');
+    console.log(JSON.stringify(ideas, null, 2));
+
+    if (ideas.length > 0 && ideas[0].actual_content) {
+      console.log('\n' + '='.repeat(80));
+      console.log('📝 RAW COMMENT (ready to post):\n');
+      console.log('-'.repeat(80));
+      console.log(ideas[0].actual_content);
+      console.log('-'.repeat(80));
+    }
+
+    console.log('\n✅ Done!\n');
+
+  } catch (error) {
+    console.error('❌ Error processing URL:', error.message);
+    console.error(error.stack);
+    process.exit(1);
+  }
 }
 
-module.exports = { runIntelligenceLoop };
+// Run if called directly
+if (require.main === module) {
+  // Check if a Reddit URL was provided as argument
+  const redditUrl = process.argv[2];
+
+  if (redditUrl && redditUrl.includes('reddit.com')) {
+    // Single URL mode
+    processRedditUrl(redditUrl)
+      .then(() => process.exit(0))
+      .catch(error => {
+        console.error('❌ Fatal error:', error);
+        process.exit(1);
+      });
+  } else if (redditUrl) {
+    console.error('❌ Invalid URL. Please provide a Reddit URL.');
+    console.error('Usage: node content-intelligence.js https://reddit.com/r/subreddit/comments/...\n');
+    process.exit(1);
+  } else {
+    // Normal intelligence loop
+    runIntelligenceLoop()
+      .then(() => {
+        console.log('✅ Intelligence loop complete');
+        process.exit(0);
+      })
+      .catch(error => {
+        console.error('❌ Fatal error:', error);
+        process.exit(1);
+      });
+  }
+}
+
+module.exports = { runIntelligenceLoop, processRedditUrl };
