@@ -7,14 +7,19 @@
  * Runs continuously, generates content based on real-time trends
  */
 
-const Anthropic = require('@anthropic-ai/sdk');
+const OpenAI = require('openai');
 const { TwitterApi } = require('twitter-api-v2');
 const axios = require('axios');
 const fs = require('fs').promises;
 
-// Initialize APIs
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+// Initialize APIs - Using OpenRouter for cheaper, multi-model access
+const openai = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+  defaultHeaders: {
+    'HTTP-Referer': 'https://usemajordomo.com',
+    'X-Title': 'Majordomo Marketing',
+  }
 });
 
 const twitterClient = new TwitterApi({
@@ -241,16 +246,16 @@ For each idea, include:
 
 Format as JSON.`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-5-sonnet-20241022',
-    max_tokens: 4000,
+  const completion = await openai.chat.completions.create({
+    model: 'anthropic/claude-3.5-sonnet', // Via OpenRouter, cheaper
     messages: [{
       role: 'user',
       content: prompt
-    }]
+    }],
+    max_tokens: 4000,
   });
 
-  const ideas = message.content[0].text;
+  const ideas = completion.choices[0].message.content;
   console.log('✅ Generated content ideas');
 
   return ideas;

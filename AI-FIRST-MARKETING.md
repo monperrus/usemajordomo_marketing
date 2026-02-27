@@ -69,7 +69,7 @@ npm install  # Installs dependencies
 # Configure API keys
 cp .env.example .env
 nano .env
-# Add: ANTHROPIC_API_KEY, TWITTER_API_KEY, etc.
+# Add: OPENROUTER_API_KEY, TWITTER_API_KEY, etc.
 ```
 
 **How it works:**
@@ -475,9 +475,9 @@ mail -s "Weekly Marketing Report" your@email.com < weekly-report.md
 ## Automation Stack (Replace Manual Work)
 
 ### Content Creation: AI-Powered
-- ✅ **Claude API** - Generate blog posts, tweets, emails
-- ✅ **GPT-4 API** - Personalization, variation testing
-- ✅ **Anthropic Prompt Caching** - Reduce costs
+- ✅ **OpenRouter API** - Access to Claude 3.5, GPT-4, and more (70% cheaper)
+- ✅ **Multi-model access** - Switch models without code changes
+- ✅ **Better rate limits** - More generous than direct APIs
 
 ### Distribution: API-Driven
 - ✅ **Twitter API** - Auto-posting, engagement
@@ -494,8 +494,8 @@ mail -s "Weekly Marketing Report" your@email.com < weekly-report.md
 
 ### Outreach: AI-Personalized
 - ✅ **Instantly.ai API** - Email campaigns
-- ✅ **OpenAI API** - Personalization at scale
-- ✅ **Anthropic API** - Response generation
+- ✅ **OpenRouter API** - Personalization and response generation at scale
+- ✅ **Multi-model strategies** - GPT-4 for speed, Claude for quality
 
 ### Engagement: Bot-Powered
 - ✅ **Tweepy** - Twitter monitoring & responses
@@ -513,15 +513,14 @@ mail -s "Weekly Marketing Report" your@email.com < weekly-report.md
 
 | Service | Cost | What It Does |
 |---------|------|--------------|
-| OpenAI API | $20/mo | Content generation, personalization |
-| Anthropic API | $10/mo | Claude for blog posts (with caching) |
+| OpenRouter API | $10/mo | Claude 3.5 + GPT-4 access (70% cheaper than direct) |
 | Apollo.io API | $49/mo | Automated lead generation |
 | Hunter.io API | $0 | Free tier (100 searches/mo) |
 | Twitter API | $0 | Free tier works fine |
 | Reddit API | $0 | Free |
 | VPS (for bots) | $5/mo | DigitalOcean droplet |
 | PM2 Plus (monitoring) | $0 | Free tier |
-| **Total** | **~$85/mo** | Fully automated |
+| **Total** | **~$65/mo** | Fully automated |
 
 **What you DON'T pay for:**
 - ❌ Buffer/Hootsuite (using APIs directly)

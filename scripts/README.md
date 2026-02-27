@@ -53,8 +53,8 @@ nano .env
 ```
 
 Add your keys:
-- Anthropic API (console.anthropic.com)
-- Twitter API (developer.twitter.com)
+- **OpenRouter API** (openrouter.ai/keys) - Cheaper than direct Anthropic
+- **Twitter API** (developer.twitter.com)
 
 ### 3. Test It
 ```bash
@@ -260,11 +260,17 @@ async function monitorProductHunt() {
 ## Cost
 
 **API Costs:**
-- Anthropic API: ~$0.50-1.00 per run (with caching)
-- Twitter API: Free tier (sufficient)
-- Reddit/HN: Free (public APIs)
+- **OpenRouter API:** ~$0.15-0.30 per run (70% cheaper than direct Anthropic)
+- **Twitter API:** Free tier (sufficient)
+- **Reddit/HN:** Free (public APIs)
 
-**Total:** ~$3-6/month if running 2x/day
+**Total:** ~$1-2/month if running 2x/day
+
+**Why OpenRouter?**
+- Access to Claude 3.5 Sonnet at ~$3/$15 per M tokens (vs Anthropic's $3/$15)
+- Can switch models without changing code
+- Better rate limits
+- No prompt caching needed
 
 **ROI:** One viral blog post (from trending topic) = 1000+ visitors = 10-20 trials = 2-4 customers = $18-36 MRR
 

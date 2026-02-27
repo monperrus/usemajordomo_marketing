@@ -5,11 +5,17 @@
  * Run after content-intelligence.js identifies trends
  */
 
-const Anthropic = require('@anthropic-ai/sdk');
+const OpenAI = require('openai');
 const fs = require('fs').promises;
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+// Using OpenRouter for cheaper, multi-model access
+const openai = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+  defaultHeaders: {
+    'HTTP-Referer': 'https://usemajordomo.com',
+    'X-Title': 'Majordomo Marketing',
+  }
 });
 
 async function generateContent(idea) {
@@ -38,18 +44,19 @@ Requirements:
 
 Output as clean Markdown with proper headings (## for H2, ### for H3).`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-5-sonnet-20241022',
+  const completion = await openai.chat.completions.create({
+    model: 'anthropic/claude-3.5-sonnet', // Via OpenRouter
+    messages: [
+      {
+        role: 'system',
+        content: 'You are a skilled content writer for Majordomo. Write helpful, authentic content that solves real problems.'
+      },
+      { role: 'user', content: prompt }
+    ],
     max_tokens: 8000,
-    messages: [{ role: 'user', content: prompt }],
-    system: [{
-      type: 'text',
-      text: 'You are a skilled content writer for Majordomo. Write helpful, authentic content that solves real problems.',
-      cache_control: { type: 'ephemeral' }
-    }]
   });
 
-  return message.content[0].text;
+  return completion.choices[0].message.content;
 }
 
 async function generateTweets(idea) {
@@ -70,13 +77,13 @@ Requirements:
 
 Format as JSON array of tweet objects with "text" field.`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-5-sonnet-20241022',
+  const completion = await openai.chat.completions.create({
+    model: 'anthropic/claude-3.5-sonnet',
+    messages: [{ role: 'user', content: prompt }],
     max_tokens: 2000,
-    messages: [{ role: 'user', content: prompt }]
   });
 
-  return message.content[0].text;
+  return completion.choices[0].message.content;
 }
 
 async function generateRedditComments(idea) {
@@ -101,13 +108,13 @@ Requirements:
 
 Format as JSON array with "scenario" and "comment" fields.`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-5-sonnet-20241022',
+  const completion = await openai.chat.completions.create({
+    model: 'anthropic/claude-3.5-sonnet',
+    messages: [{ role: 'user', content: prompt }],
     max_tokens: 3000,
-    messages: [{ role: 'user', content: prompt }]
   });
 
-  return message.content[0].text;
+  return completion.choices[0].message.content;
 }
 
 async function saveContent(content, idea, type = 'blog') {
