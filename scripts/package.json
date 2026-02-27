@@ -1,0 +1,22 @@
+{
+  "name": "majordomo-marketing-automation",
+  "version": "1.0.0",
+  "description": "Reactive content intelligence and automation for Majordomo marketing",
+  "main": "content-intelligence.js",
+  "scripts": {
+    "intelligence": "node content-intelligence.js",
+    "monitor": "pm2 start content-intelligence.js --cron '0 */6 * * *'",
+    "generate": "node generate-from-ideas.js",
+    "stop": "pm2 stop content-intelligence",
+    "logs": "pm2 logs content-intelligence"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0",
+    "twitter-api-v2": "^1.15.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "pm2": "^5.3.0"
+  }
+}

@@ -13,31 +13,43 @@
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  CONTENT ENGINE (AI)                                │
-│  - Generates blog posts, tweets, emails             │
-│  - Optimizes for SEO automatically                  │
-│  - Creates variations for A/B testing               │
+│  INTELLIGENCE ENGINE (Monitor Internet)             │
+│  - Twitter: Trending tweets about email/productivity│
+│  - Reddit: Popular posts in relevant subreddits     │
+│  - HackerNews: Top discussions                      │
+│  - Google Trends: Rising search queries             │
 └─────────────────┬───────────────────────────────────┘
-                  │
+                  │ (Real signals)
+┌─────────────────▼───────────────────────────────────┐
+│  CONTENT ENGINE (Reactive AI)                       │
+│  - Analyzes trending topics & pain points           │
+│  - Generates content that responds to trends        │
+│  - Creates blog posts, tweets, Reddit comments      │
+│  - All timely, relevant, contextual                 │
+└─────────────────┬───────────────────────────────────┘
+                  │ (Generated content)
 ┌─────────────────▼───────────────────────────────────┐
 │  DISTRIBUTION ENGINE (APIs + MCPs)                  │
 │  - Auto-posts to Twitter, LinkedIn, Reddit          │
+│  - Publishes blog posts (Medium/WordPress)          │
+│  - Engages in trending threads                      │
 │  - Submits to directories and aggregators           │
-│  - Syndicates content across platforms              │
 └─────────────────┬───────────────────────────────────┘
-                  │
+                  │ (Distributed content)
 ┌─────────────────▼───────────────────────────────────┐
 │  ENGAGEMENT ENGINE (AI + APIs)                      │
 │  - Monitors mentions, responds automatically        │
 │  - DMs interested prospects                         │
 │  - Qualifies leads via conversation                 │
+│  - Tracks engagement metrics                        │
 └─────────────────┬───────────────────────────────────┘
-                  │
+                  │ (Qualified leads)
 ┌─────────────────▼───────────────────────────────────┐
 │  CONVERSION ENGINE (Webhooks + Automation)          │
 │  - Triggers email sequences                         │
 │  - Sends personalized demos                         │
 │  - Tracks to paying customer                        │
+│  - Measures ROI per channel                         │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -45,68 +57,79 @@
 
 ## TODAY: Setup Day (4 hours)
 
-### Hour 1: AI Content Generation System
+### Hour 1: Reactive Content Intelligence System
 
-**Install Claude Code Skill: Content Generator**
+**NOT static prompts. Content responds to what's trending RIGHT NOW.**
+
+**Install reactive intelligence system:**
 ```bash
-# Create a skill that generates content automatically
-cat > ~/.claude/skills/content-generator.json <<EOF
-{
-  "name": "content-generator",
-  "trigger": "daily at 6am",
-  "actions": [
-    "Generate 1 blog post (2000+ words, SEO-optimized)",
-    "Generate 5 tweets for today",
-    "Generate 2 LinkedIn posts",
-    "Generate 10 Reddit comments (helpful, not promotional)",
-    "Save all to content queue"
-  ]
-}
-EOF
+cd scripts
+npm install  # Installs dependencies
+
+# Configure API keys
+cp .env.example .env
+nano .env
+# Add: ANTHROPIC_API_KEY, TWITTER_API_KEY, etc.
 ```
 
-**Set up automated blog publishing:**
-```bash
-# Option 1: Medium API (automated publishing)
-# Get Medium API token: medium.com/me/settings
-export MEDIUM_TOKEN="your_token"
-
-# Option 2: WordPress API
-# Install WordPress, enable REST API
-export WP_URL="https://usemajordomo.com/blog"
-export WP_TOKEN="your_token"
-
-# Option 3: Ghost API (recommended - clean, fast)
-# Ghost is perfect for automated publishing
+**How it works:**
+```
+1. Monitor Twitter/Reddit/HackerNews for trending discussions
+2. AI analyzes signals and generates content ideas
+3. Generate blog posts/tweets that respond to trends
+4. All automatic, runs every 6 hours
 ```
 
-**Create automation script:**
+**Run first intelligence scan:**
 ```bash
-# publish-content.sh
-#!/bin/bash
-# This runs daily via cron
+cd scripts
+npm run intelligence
+```
 
-# Generate content using Claude
-claude-code run "Generate blog post about email productivity,
-  2000 words, target keyword: 'email automation tools',
-  output to blog-draft.md"
+This will:
+- Monitor Twitter for "email overload", "inbox zero", etc.
+- Scrape Reddit r/entrepreneur, r/productivity for top posts
+- Check HackerNews for trending discussions
+- Save signals to `signals.json`
+- Generate content ideas to `content-ideas.json`
 
-# Publish to Medium via API
-curl -X POST https://api.medium.com/v1/users/$USER_ID/posts \
-  -H "Authorization: Bearer $MEDIUM_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d @blog-draft.json
+**Generate content from trends:**
+```bash
+npm run generate
+```
 
-# Or publish to WordPress
-wp post create blog-draft.md --post_status=publish
+This creates:
+- Blog post (2000+ words) responding to trending topic
+- Twitter thread (5-7 tweets) engaging with the discussion
+- Reddit comments for participating in threads
 
-echo "Content published: $(date)" >> publish.log
+**Automate it (runs every 6 hours):**
+```bash
+npm run monitor     # Start continuous monitoring
+pm2 save           # Save PM2 config
+pm2 startup        # Auto-start on reboot
+```
+
+**Example of reactive content:**
+```
+Signal found: Reddit post "I'm spending 4hrs/day on email"
+  → 347 upvotes, 128 comments, currently trending
+
+Content generated: "Email Overload Is Killing Your Startup"
+  → References the exact Reddit discussion
+  → Addresses the pain point everyone's talking about
+  → Published while topic is still hot
+  → Gets shared in original Reddit thread
 ```
 
 **Action items:**
-- [ ] Get API tokens (Medium/WordPress/Ghost)
-- [ ] Set up cron job: `crontab -e` → `0 6 * * * /path/to/publish-content.sh`
-- [ ] Test with one blog post
+- [ ] Install: `cd scripts && npm install`
+- [ ] Configure: Add API keys to `.env`
+- [ ] Test: `npm run intelligence`
+- [ ] Generate: `npm run generate`
+- [ ] Automate: `npm run monitor`
+
+See `scripts/README.md` for full documentation.
 
 ---
 
@@ -603,36 +626,6 @@ mail -s "Weekly Marketing Report" your@email.com < weekly-report.md
 - [ ] Configure Instantly.ai API
 - [ ] Create email sequences
 - [ ] Start with 10 leads/day, scale to 50
-
----
-
-## Code Repository Structure
-
-```
-majordomo-marketing-automation/
-├── bots/
-│   ├── twitter-bot.js       # Auto-posting + engagement
-│   ├── reddit-bot.py        # Helpful comments
-│   ├── linkedin-bot.js      # Professional posts
-│   └── engagement-bot.py    # Reply to mentions
-├── content/
-│   ├── generate-blog.sh     # AI blog generation
-│   ├── generate-tweets.js   # AI tweet generation
-│   └── content-queue.json   # 30-day queue
-├── leads/
-│   ├── find-leads.sh        # Apollo.io automation
-│   ├── enrich-leads.js      # Hunter.io + Clearbit
-│   └── personalize.js       # AI personalization
-├── campaigns/
-│   ├── send-campaign.sh     # Instantly.ai automation
-│   └── sequences.json       # Email templates
-├── analytics/
-│   ├── fetch-metrics.sh     # Pull from all APIs
-│   └── generate-report.js   # AI-powered insights
-└── config/
-    ├── api-keys.env         # All API credentials
-    └── crontab              # Scheduled jobs
-```
 
 ---
 
