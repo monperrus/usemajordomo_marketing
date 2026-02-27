@@ -29,10 +29,19 @@ No more static prompts. Content responds to what people are actually talking abo
                  ▼
 ┌─────────────────────────────────────────────────────────┐
 │  GENERATE PHASE (AI creates content)                   │
+│  ├── Reddit comments (helpful, contextual)             │
 │  ├── Blog post (2000+ words, SEO-optimized)           │
 │  ├── Twitter thread (5-7 tweets)                       │
-│  ├── Reddit comments (helpful, contextual)             │
 │  └── All tied to real trending discussions             │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│  POST PHASE (User validation + auto-posting)           │
+│  ├── Review each Reddit comment                        │
+│  ├── Approve/reject/edit before posting                │
+│  ├── Post to Reddit automatically                      │
+│  └── Track posted comments (avoid duplicates)          │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -83,9 +92,15 @@ This will:
 
 ### One-Time Run (Manual)
 ```bash
-npm run intelligence  # Gather signals, generate ideas
-npm run generate      # Create content from ideas
+npm run intelligence  # Gather signals, generate Reddit comment ideas
+npm run post-reddit   # Review & post comments (interactive with approval)
+npm run generate      # Create blog posts/tweets (optional)
 ```
+
+**Recommended workflow:**
+1. `npm run intelligence` - Find trending discussions
+2. `npm run post-reddit` - Engage with comments (you approve each one)
+3. `npm run generate` - Create long-form content (if needed)
 
 ### Continuous Monitoring (Automated)
 ```bash
