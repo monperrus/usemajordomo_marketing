@@ -5,6 +5,9 @@
  * Run after content-intelligence.js identifies trends
  */
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 const OpenAI = require('openai');
 const fs = require('fs').promises;
 

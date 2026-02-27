@@ -4,6 +4,7 @@
   "description": "Reactive content intelligence and automation for Majordomo marketing",
   "main": "content-intelligence.js",
   "scripts": {
+    "test": "node test-config.js",
     "intelligence": "node content-intelligence.js",
     "monitor": "pm2 start content-intelligence.js --cron '0 */6 * * *'",
     "generate": "node generate-from-ideas.js",

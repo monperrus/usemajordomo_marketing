@@ -7,6 +7,9 @@
  * Runs continuously, generates content based on real-time trends
  */
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 const OpenAI = require('openai');
 const { TwitterApi } = require('twitter-api-v2');
 const axios = require('axios');
