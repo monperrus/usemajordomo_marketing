@@ -22,12 +22,24 @@ const openai = new OpenAI({
   }
 });
 
-const twitterClient = new TwitterApi({
-  appKey: process.env.TWITTER_API_KEY,
-  appSecret: process.env.TWITTER_API_SECRET,
-  accessToken: process.env.TWITTER_ACCESS_TOKEN,
-  accessSecret: process.env.TWITTER_ACCESS_SECRET,
-});
+// Twitter is optional (free tier for monitoring, or skip entirely)
+let twitterClient = null;
+if (process.env.TWITTER_BEARER_TOKEN) {
+  // Use bearer token (free tier - read only)
+  twitterClient = new TwitterApi(process.env.TWITTER_BEARER_TOKEN);
+  console.log('✅ Twitter monitoring enabled (read-only)');
+} else if (process.env.TWITTER_API_KEY) {
+  // Use OAuth 1.0 (requires paid API for posting)
+  twitterClient = new TwitterApi({
+    appKey: process.env.TWITTER_API_KEY,
+    appSecret: process.env.TWITTER_API_SECRET,
+    accessToken: process.env.TWITTER_ACCESS_TOKEN,
+    accessSecret: process.env.TWITTER_ACCESS_SECRET,
+  });
+  console.log('✅ Twitter monitoring enabled (OAuth 1.0)');
+} else {
+  console.log('⚠️  Twitter monitoring disabled (no API keys)');
+}
 
 // Signal sources
 const SOURCES = {
@@ -57,6 +69,11 @@ const SOURCES = {
  * Monitor Twitter for trending discussions
  */
 async function monitorTwitter() {
+  if (!twitterClient) {
+    console.log('⏭️  Skipping Twitter (no API access)');
+    return [];
+  }
+
   console.log('📊 Monitoring Twitter trends...');
 
   const signals = [];
