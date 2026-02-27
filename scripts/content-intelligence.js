@@ -21,7 +21,7 @@ const openai = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
   defaultHeaders: {
     'HTTP-Referer': 'https://usemajordomo.com',
-    'X-Title': 'Majordomo Marketing',
+    'X-Title': 'usemajordomo.com',
   }
 });
 
@@ -44,29 +44,8 @@ if (process.env.TWITTER_BEARER_TOKEN) {
   console.log('⚠️  Twitter monitoring disabled (no API keys)');
 }
 
-// Signal sources
-const SOURCES = {
-  twitter: {
-    queries: [
-      'email overload',
-      'too many emails',
-      'inbox zero impossible',
-      'drowning in email',
-      'email bankruptcy',
-      'productivity tips email'
-    ]
-  },
-  reddit: {
-    subreddits: ['productivity', 'entrepreneur', 'startups', 'SaaS', 'solopreneur'],
-    keywords: ['email', 'inbox', 'productivity', 'automation']
-  },
-  hackernews: {
-    keywords: ['email', 'productivity', 'automation', 'AI']
-  },
-  googleTrends: {
-    topics: ['email automation', 'AI email', 'productivity tools']
-  }
-};
+// Load signal sources from configuration file
+const SOURCES = require('./sources.json');
 
 /**
  * Monitor Twitter for trending discussions
@@ -105,6 +84,14 @@ async function monitorTwitter() {
         }
       }
     } catch (error) {
+      // Handle 402 Payment Required error
+      if (error.code === 402 || error.message.includes('402')) {
+        console.log('⚠️  Twitter requires paid API ($100/mo) for search');
+        console.log('   → Disabling Twitter monitoring');
+        console.log('   → Remove TWITTER_BEARER_TOKEN from .env to hide this message\n');
+        twitterClient = null; // Disable for future runs
+        break; // Stop trying other queries
+      }
       console.error(`Twitter error for "${query}":`, error.message);
     }
   }
@@ -246,28 +233,27 @@ async function analyzeSignals(signals) {
     return JSON.stringify(s);
   }).join('\n\n');
 
-  const prompt = `You are analyzing internet signals to generate timely, relevant content ideas for Majordomo (AI email automation at $9/month).
+  // - A blog post topic (2000+ words) that addresses a trending pain point
+// - A Twitter thread (5-7 tweets) responding to a popular discussion
+
+  const prompt = `You are analyzing internet signals to generate timely, relevant content ideas for Majordomo (AI email agent at $9/month).
 
 SIGNALS FROM THE INTERNET (last 24 hours):
 ${signalSummary}
 
-Based on these real conversations and trends, generate 3 content ideas:
+Based on these real conversations and trends, generate a Reddit comment strategy for engaging in these conversations meaningfully. We DO NOT write AI slop. We are Helpful & experienced rather than sales-focused.
 
-1. A blog post topic (2000+ words) that addresses a trending pain point
-2. A Twitter thread (5-7 tweets) responding to a popular discussion
-3. A Reddit comment strategy for engaging in these conversations
-
-For each idea, include:
+For each conversation, include:
 - The specific signal it responds to
-- Why it's timely (reference the trend/discussion)
-- Target keywords for SEO
+- Punchline
 - Content outline
+- Actual content
 - Estimated reach/impact
 
 Format as JSON.`;
 
   const completion = await openai.chat.completions.create({
-    model: 'anthropic/claude-3.5-sonnet', // Via OpenRouter, cheaper
+    model: 'anthropic/claude-sonnet-4-6', // Via OpenRouter, cheaper
     messages: [{
       role: 'user',
       content: prompt
@@ -359,18 +345,14 @@ async function runIntelligenceLoop() {
 
   try {
     // Gather signals from all sources
-    const [twitterSignals, redditSignals, hnSignals, trendSignals] = await Promise.all([
-      monitorTwitter(),
+    const [redditSignals, hnSignals] = await Promise.all([
       monitorReddit(),
       monitorHackerNews(),
-      checkGoogleTrends()
     ]);
 
     const allSignals = [
-      ...twitterSignals,
       ...redditSignals,
       ...hnSignals,
-      ...trendSignals
     ];
 
     console.log(`\n📊 Total signals collected: ${allSignals.length}\n`);
@@ -380,9 +362,18 @@ async function runIntelligenceLoop() {
       return;
     }
 
-    // Save signals for analysis
+    // Generate ISO timestamp for filenames
+    const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
+    const signalsFile = `signals-${timestamp}.json`;
+    const ideasFile = `content-ideas-${timestamp}.json`;
+
+    // Save signals for analysis (with timestamp and as latest)
     await fs.writeFile(
-      'signals.json',
+      signalsFile,
+      JSON.stringify(allSignals, null, 2)
+    );
+    await fs.writeFile(
+      'signals-latest.json',
       JSON.stringify(allSignals, null, 2)
     );
 
@@ -390,12 +381,18 @@ async function runIntelligenceLoop() {
     const contentIdeas = await analyzeSignals(allSignals);
 
     await fs.writeFile(
-      'content-ideas.json',
+      ideasFile,
+      contentIdeas
+    );
+    await fs.writeFile(
+      'content-ideas-latest.json',
       contentIdeas
     );
 
-    console.log('\n📝 Content ideas generated and saved to content-ideas.json');
-    console.log('Review ideas and run: npm run generate-content\n');
+    console.log(`\n📝 Content ideas generated and saved:`);
+    console.log(`   - ${signalsFile}`);
+    console.log(`   - ${ideasFile}`);
+    console.log('\nReview ideas and run: npm run generate\n');
 
     // Optionally: Auto-generate content from top idea
     // const topIdea = JSON.parse(contentIdeas)[0];
